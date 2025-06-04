@@ -1,6 +1,7 @@
 import express, { json } from "express";
 import cors from "cors";
 import authRouter from "./routes/auth.routes.js";
+import productsRouter from "./routes/products.routes.js";
 
 const app = express();
 
@@ -13,5 +14,6 @@ app.use(
 );
 app.use(json());
 app.use("/auth", authRouter);
+app.use("/products", productsRouter)
 
 export default app;

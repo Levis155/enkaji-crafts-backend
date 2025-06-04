@@ -8,17 +8,34 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  fullName      String   @map("full_name")
-  emailAddress  String   @unique @map("email_address")
-  password      String   @unique @map("password")
-  phoneNumber   String   @unique @map("phone_number")
-  county        String?   @map("county")
-  town          String?   @map("town")
-  isAdmin       Boolean  @default(false) @map("is_admin")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  isDeleted     Boolean  @default(false) @map("is_deleted")
+  id           String   @id @default(uuid())
+  fullName     String   @map("full_name")
+  emailAddress String   @unique @map("email_address")
+  password     String   @unique @map("password")
+  phoneNumber  String   @unique @map("phone_number")
+  county       String?  @map("county")
+  town         String?  @map("town")
+  isAdmin      Boolean  @default(false) @map("is_admin")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  isDeleted    Boolean  @default(false) @map("is_deleted")
 
   @@map("users")
+}
+
+model Product {
+  id             String   @id @default(uuid())
+  name           String   @map("product_name")
+  description    String   @map("product_description")
+  price          Float    @map("product_price")
+  originalPrice  Float?   @map("original_price")
+  image          String   @map("image_url")
+  inStock        Boolean  @default(true) @map("in_stock")
+  category       String   @map("product_category")
+  specifications String   @map("product_specifications")
+  packageContent String   @map("package_content")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("products")
 }
