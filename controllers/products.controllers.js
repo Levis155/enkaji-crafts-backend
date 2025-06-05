@@ -30,6 +30,7 @@ export const getAllProducts = async (req, res) => {
     try{
         const allProducts = await client.product.findMany({
             select:{
+                id: true,
                 image:true,
                 name:true,
                 price:true,
