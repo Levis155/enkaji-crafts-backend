@@ -34,6 +34,7 @@ export const getAllProducts = async (req, res) => {
                 name:true,
                 price:true,
                 originalPrice:true,
+                inStock:true,
             }
         });
 

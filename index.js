@@ -7,13 +7,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://red-dune.vercel.app"],
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
 );
 app.use(json());
 app.use("/auth", authRouter);
-app.use("/products", productsRouter)
+app.use("/products", productsRouter);
 
 export default app;
