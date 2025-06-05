@@ -25,3 +25,22 @@ export const createProduct = async (req, res) => {
         })
     }
 }
+
+export const getAllProducts = async (req, res) => {
+    try{
+        const allProducts = await client.product.findMany({
+            select:{
+                image:true,
+                name:true,
+                price:true,
+                originalPrice:true,
+            }
+        });
+
+        res.status(200).json(allProducts)
+    } catch(e) {
+        res.status(500).json({
+            message:"Something went wrong."
+        })
+    }
+}
