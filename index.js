@@ -1,4 +1,5 @@
 import express, { json } from "express";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRouter from "./routes/auth.routes.js";
 import productsRouter from "./routes/products.routes.js";
@@ -14,6 +15,7 @@ app.use(
   })
 );
 app.use(json());
+app.use(cookieParser());
 app.use("/auth", authRouter);
 app.use("/products", productsRouter);
 app.use("/cart", cartRouter);

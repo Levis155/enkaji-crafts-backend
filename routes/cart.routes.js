@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { addToCart, incrementItemQuantity, decrementItemQuantity } from "../controllers/cart.controllers.js";
+import {
+getItems,
+addItems
+} from "../controllers/cart.controllers.js";
+import verifyUser from "../middleware/verifyUser.js";
 
 const router = Router();
 
-router.route("/:productId").post(addToCart);
-router.route("/items/:cartId/increment").patch(incrementItemQuantity)
-router.route("/items/:cartId/decrement").patch(decrementItemQuantity)
+router.route("/items").post(verifyUser, addItems).get(verifyUser, getItems)
+
+
 
 export default router;

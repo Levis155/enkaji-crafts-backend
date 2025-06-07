@@ -2,60 +2,62 @@ import { PrismaClient } from "@prisma/client";
 
 const client = new PrismaClient();
 
-export const addToCart = async (req, res) => {
-  try {
-    const { productId } = req.params;
-    const { userId } = req.body;
 
-    const newCartItem = await client.cart.create({
-      data: {
-        productId,
+export const addItems = async (req, res) => {
+    try{
+        const userId = req.user.id;
+        const { cart } = req.body;
+
+        await client.cart.deleteMany({
+            where: { userId }
+        });
+
+        const cartItems = cart.map(item => ({
+            name: item.name,
+            price: item.price,
+            originalPrice: item.originalPrice,
+            image: item.image,
+            inStock: item.inStock,
+            quantity: item.quantity,
+            productId: item.id,
+            userId
+        }));
+
+        if (cartItems.length > 0) {
+            await client.cart.createMany({
+                data: cartItems
+            });
+        }
+
+        res.status(201).json({ message: "Cart updated successfully." });
+    } catch(e) {
+        console.log(e)
+        res.status(500).json({message: "Something went wrong."})
+    }
+};
+
+export const getItems = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const cart = await client.cart.findMany({
+      where: {
         userId,
       },
+      select: {
+        productId: true,
+        name:true,
+        image:true,
+        price: true,
+        originalPrice: true,
+        quantity: true,
+        inStock: true,
+      }
     });
 
-    res.status(201).json({ message: "Product added to cart successfully" });
+    res.status(200).json(
+      {cart});
   } catch (e) {
-    res.status(500).json({ message: "Something went wrong." });
-  }
-};
-
-export const incrementItemQuantity = async (req, res) => {
-  try {
-    const { cartId } = req.params;
-
-    const updatedProduct = await client.cart.update({
-      where: { id: cartId },
-      data: {
-        quantity: {
-          increment: 1,
-        },
-      },
-    });
-
-    res.status(200).json({ updatedProduct });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ message: "Something went wrong." });
-  }
-};
-
-export const decrementItemQuantity = async (req, res) => {
-  try {
-    const { cartId } = req.params;
-
-    const updatedProduct = await client.cart.update({
-      where: { id: cartId },
-      data: {
-        quantity: {
-          decrement: 1,
-        },
-      },
-    });
-
-    res.status(200).json({ updatedProduct });
-  } catch (e) {
-    console.log(e);
     res.status(500).json({ message: "Something went wrong." });
   }
 };
