@@ -59,7 +59,7 @@ export const getProduct = async (req, res) => {
             return res.status(404).json({message: "Product not found."})
         }
 
-        res.status(200).json({product})
+        res.status(200).json(product)
     } catch(e) {
         console.log(e);
         res.status(500).json({message: "Something went wrong."})
