@@ -45,7 +45,7 @@ model Product {
 
 model Cart {
   id            String   @id @default(uuid())
-  name          String   @unique @map("product_name")
+  name          String   @map("product_name")
   price         Float    @map("product_price")
   originalPrice Float    @map("original_price")
   image         String   @map("image_url")
