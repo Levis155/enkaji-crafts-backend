@@ -26,27 +26,6 @@ export const createProduct = async (req, res) => {
     }
 }
 
-export const getAllProducts = async (req, res) => {
-    try{
-        const allProducts = await client.product.findMany({
-            select:{
-                id: true,
-                image:true,
-                name:true,
-                price:true,
-                originalPrice:true,
-                inStock:true,
-            }
-        });
-
-        res.status(200).json(allProducts)
-    } catch(e) {
-        res.status(500).json({
-            message:"Something went wrong."
-        })
-    }
-}
-
 export const getProduct = async (req, res) => {
     try{
         const { id } = req.params;
@@ -63,5 +42,48 @@ export const getProduct = async (req, res) => {
     } catch(e) {
         console.log(e);
         res.status(500).json({message: "Something went wrong."})
+    }
+}
+
+export const getSimilarProducts = async (req, res) => {
+    try{
+        const { category } = req.params;
+
+        const similarProducts = await client.product.findMany({
+            where: {
+                category
+            }
+        })
+
+        if(similarProducts.length === 0) {
+            return res.status(404).json({message: "Category not found."})
+        }
+
+        res.status(200).json(similarProducts);
+    } catch(e) {
+        res.status(500).json({message: "Something went wrong."})
+    }
+}
+
+
+export const getAllProducts = async (req, res) => {
+    try{
+        const allProducts = await client.product.findMany({
+            select:{
+                id: true,
+                image:true,
+                name:true,
+                price:true,
+                originalPrice:true,
+                inStock:true,
+                reviews:true
+            }
+        });
+
+        res.status(200).json(allProducts)
+    } catch(e) {
+        res.status(500).json({
+            message:"Something went wrong."
+        })
     }
 }
