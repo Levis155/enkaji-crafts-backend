@@ -78,22 +78,7 @@ export const getSimilarProducts = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const allProducts = await client.product.findMany({
-      select: {
-        id: true,
-        image: true,
-        name: true,
-        price: true,
-        originalPrice: true,
-        inStock: true,
-        reviews: {
-          select: {
-            rating: true,
-            text: true,
-          },
-        },
-      },
-    });
+    const allProducts = await client.product.findMany();
 
     res.status(200).json(allProducts);
   } catch (e) {
