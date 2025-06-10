@@ -76,6 +76,41 @@ export const getSimilarProducts = async (req, res) => {
   }
 };
 
+export const getSearchedProducts = async (req, res) => {
+  try {
+    const { query } = req.params;
+
+    const searchedProducts = await client.product.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+          {
+            description: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+          {
+            category: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    });
+
+    res.status(200).json(searchedProducts);
+  } catch (e) {
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
 export const getAllProducts = async (req, res) => {
   try {
     const allProducts = await client.product.findMany();
