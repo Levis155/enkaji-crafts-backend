@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.routes.js";
 import productsRouter from "./routes/products.routes.js";
 import cartRouter from "./routes/cart.routes.js";
 import ordersRouter from "./routes/orders.routes.js";
+import usersRouter from "./routes/user.routes.js";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(cookieParser());
 app.use("/auth", authRouter);
 app.use("/products", productsRouter);
 app.use("/cart", cartRouter);
-app.use("/orders", ordersRouter)
+app.use("/orders", ordersRouter);
+app.use("/users", usersRouter)
 
 export default app;
