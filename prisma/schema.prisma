@@ -85,6 +85,7 @@ model Review {
 
 model Order {
   id           String    @id @default(uuid())
+  orderNumber  Int        @unique @default(autoincrement()) @map("order_number")
   userId       String    @map("user_id")
   status       String    @default("pending") @map("status")
   totalPrice   Float     @map("total")

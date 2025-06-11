@@ -1,13 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 
+
 const client = new PrismaClient();
 
 export const makeOrder = async (req, res) => {
   try {
-    const {
-      totalPrice,
-      orderItems,
-    } = req.body;
+    const { totalPrice, orderItems } = req.body;
     const userId = req.user.id;
 
     const newOrder = await client.order.create({
@@ -26,6 +24,26 @@ export const makeOrder = async (req, res) => {
     res.status(201).json(newOrder);
   } catch (e) {
     console.log(e);
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+export const getOrdersByUser = async (req, res) => {
+  try {
+    const userId  = req.user.id;
+
+    const orders = await client.order.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        orderItems: true,
+        user: true
+      }
+    });
+
+    res.status(200).json(orders);
+  } catch (e) {
     res.status(500).json({ message: "Something went wrong." });
   }
 };
