@@ -5,12 +5,10 @@ const client = new PrismaClient();
 export const updateUserProfile = async (req, res) => {
   const id = req.user.id;
 
-  // Fields that should not be updated
   const forbiddenFields = ["id", "isAdmin", "createdAt", "updatedAt"];
 
   const updateData = {};
 
-  // Build updateData by skipping forbidden and empty/invalid fields
   for (const key in req.body) {
     const value = req.body[key];
 
