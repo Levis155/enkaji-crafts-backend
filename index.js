@@ -6,6 +6,7 @@ import productsRouter from "./routes/products.routes.js";
 import cartRouter from "./routes/cart.routes.js";
 import ordersRouter from "./routes/orders.routes.js";
 import usersRouter from "./routes/user.routes.js";
+import wishlistRouter from "./routes/wishlist.routes.js";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use("/auth", authRouter);
 app.use("/products", productsRouter);
 app.use("/cart", cartRouter);
+app.use("/wishlist", wishlistRouter);
 app.use("/orders", ordersRouter);
 app.use("/users", usersRouter)
 

@@ -52,6 +52,22 @@ CREATE TABLE "cart" (
 );
 
 -- CreateTable
+CREATE TABLE "wishlist" (
+    "id" TEXT NOT NULL,
+    "product_name" TEXT NOT NULL,
+    "product_price" DOUBLE PRECISION NOT NULL,
+    "original_price" DOUBLE PRECISION NOT NULL,
+    "image_url" TEXT NOT NULL,
+    "in_stock" BOOLEAN NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "product_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "wishlist_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "reviews" (
     "id" TEXT NOT NULL,
     "product_id" TEXT NOT NULL,
@@ -109,6 +125,9 @@ CREATE UNIQUE INDEX "orders_order_number_key" ON "orders"("order_number");
 
 -- AddForeignKey
 ALTER TABLE "cart" ADD CONSTRAINT "cart_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "wishlist" ADD CONSTRAINT "wishlist_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

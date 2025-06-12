@@ -22,9 +22,10 @@ model User {
   isDeleted      Boolean  @default(false) @map("is_deleted")
 
   // Relations
-  cartItems Cart[]
-  orders    Order[]
-  reviews   Review[]
+  cartItems     Cart[]
+  wishlistItems Wishlist[]
+  orders        Order[]
+  reviews       Review[]
 
   @@map("users")
 }
@@ -65,6 +66,23 @@ model Cart {
   user User @relation(fields: [userId], references: [id])
 
   @@map("cart")
+}
+
+model Wishlist {
+  id            String   @id @default(uuid())
+  name          String   @map("product_name")
+  price         Float    @map("product_price")
+  originalPrice Float    @map("original_price")
+  image         String   @map("image_url")
+  inStock       Boolean  @map("in_stock")
+  userId        String   @map("user_id")
+  productId     String   @map("product_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("wishlist")
 }
 
 model Review {
