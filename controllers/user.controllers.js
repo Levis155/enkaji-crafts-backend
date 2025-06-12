@@ -1,35 +1,63 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const client = new PrismaClient();
 
 export const updateUserProfile = async (req, res) => {
-  const id = req.user.id;
-
-  const forbiddenFields = ["id", "isAdmin", "createdAt", "updatedAt"];
-
-  const updateData = {};
-
-  for (const key in req.body) {
-    const value = req.body[key];
-
-    if (
-      !forbiddenFields.includes(key) &&
-      value !== null &&
-      value !== undefined &&
-      !(typeof value === "string" && value.trim() === "")
-    ) {
-      updateData[key] = value;
-    }
-  }
-
   try {
-    const updatedUser = await client.user.update({
-      where: { id },
-      data: updateData,
+    const userId = req.user.id;
+
+    const {
+      fullName,
+      emailAddress,
+      phoneNumber,
+      county,
+      town,
+      password,
+      oldPassword,
+    } = req.body;
+
+    const user = await client.user.findUnique({
+      where: { id: userId },
     });
 
-    return res.status(200).json(updatedUser);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const updatedFields = {};
+
+    if (fullName) updatedFields.fullName = fullName;
+    if (emailAddress) updatedFields.emailAddress = emailAddress;
+    if (phoneNumber) updatedFields.phoneNumber = phoneNumber;
+    if (county) updatedFields.county = county;
+    if (town) updatedFields.town = town;
+
+    if (password) {
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Old password is incorrect." });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 12);
+      updatedFields.password = hashedPassword;
+    }
+
+    const updatedUser = await client.user.update({
+      where: { id: userId },
+      data: updatedFields,
+    });
+
+    res.status(200).json({
+      fullName: updatedUser.fullName,
+      emailAddress: updatedUser.emailAddress,
+      phoneNumber: updatedUser.phoneNumber,
+      county: updatedUser.county,
+      town: updatedUser.town,
+      shippingCharge: updatedUser.shippingCharge,
+    });
   } catch (e) {
+    console.error("Update user error:", e);
     res.status(500).json({ message: "Something went wrong." });
   }
 };

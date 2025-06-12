@@ -68,13 +68,12 @@ CREATE TABLE "reviews" (
 -- CreateTable
 CREATE TABLE "orders" (
     "id" TEXT NOT NULL,
+    "order_number" SERIAL NOT NULL,
     "user_id" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'pending',
     "total" DOUBLE PRECISION NOT NULL,
     "county" TEXT NOT NULL,
     "town" TEXT NOT NULL,
-    "phone_number" TEXT NOT NULL,
-    "email_address" TEXT NOT NULL,
     "is_paid" BOOLEAN NOT NULL DEFAULT false,
     "paid_at" TIMESTAMP(3),
     "delivered_at" TIMESTAMP(3),
@@ -89,6 +88,8 @@ CREATE TABLE "order_items" (
     "id" TEXT NOT NULL,
     "order_id" TEXT NOT NULL,
     "product_id" TEXT NOT NULL,
+    "product_name" TEXT NOT NULL,
+    "image_url" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -101,10 +102,10 @@ CREATE TABLE "order_items" (
 CREATE UNIQUE INDEX "users_email_address_key" ON "users"("email_address");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_password_key" ON "users"("password");
+CREATE UNIQUE INDEX "users_phone_number_key" ON "users"("phone_number");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_phone_number_key" ON "users"("phone_number");
+CREATE UNIQUE INDEX "orders_order_number_key" ON "orders"("order_number");
 
 -- AddForeignKey
 ALTER TABLE "cart" ADD CONSTRAINT "cart_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

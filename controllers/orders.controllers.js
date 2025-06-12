@@ -5,13 +5,15 @@ const client = new PrismaClient();
 
 export const makeOrder = async (req, res) => {
   try {
-    const { totalPrice, orderItems } = req.body;
+    const { totalPrice, town, county, orderItems } = req.body;
     const userId = req.user.id;
 
     const newOrder = await client.order.create({
       data: {
         userId,
         totalPrice,
+        town,
+        county,
         orderItems: {
           create: orderItems,
         },
