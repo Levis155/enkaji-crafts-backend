@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { response } from "express";
+
 
 const client = new PrismaClient();
 
@@ -16,7 +16,7 @@ export const addReview = async (req, res) => {
     });
 
     if (!product) {
-      return response.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Product not found" });
     }
 
     const newReview = await client.review.create({

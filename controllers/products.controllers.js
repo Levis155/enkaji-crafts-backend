@@ -40,8 +40,9 @@ export const getProduct = async (req, res) => {
     const { id } = req.params;
 
     const product = await client.product.findFirst({
-      where: {
-        id,
+      where: { id },
+      include: {
+        reviews: true, 
       },
     });
 
@@ -49,12 +50,36 @@ export const getProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found." });
     }
 
-    res.status(200).json(product);
+    const averageRatingResult = await client.review.aggregate({
+      _avg: {
+        rating: true,
+      },
+      where: {
+        productId: id,
+      },
+    });
+
+    res.status(200).json({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image,
+      inStock: product.inStock,
+      category: product.category,
+      description: product.description,
+      specifications: product.specifications,
+      packageContent: product.packageContent,
+      averageRating: averageRatingResult._avg.rating || 0,
+      reviews: product.reviews,
+    });
   } catch (e) {
-    console.log(e);
+    console.error(e);
     res.status(500).json({ message: "Something went wrong." });
   }
 };
+
+
 
 export const getSimilarProducts = async (req, res) => {
   try {
@@ -113,10 +138,29 @@ export const getSearchedProducts = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const allProducts = await client.product.findMany();
+    const allProducts = await client.product.findMany({include: {reviews:true}});
 
-    res.status(200).json(allProducts);
+    const productsWithRatings = await Promise.all(
+      allProducts.map(async (product) => {
+        const avgRating = await client.review.aggregate({
+          _avg: {
+            rating: true,
+          },
+          where: {
+            productId: product.id,
+          },
+        });
+
+        return {
+          ...product,
+          averageRating: avgRating._avg.rating || 0,
+        };
+      })
+    );
+
+    res.status(200).json(productsWithRatings);
   } catch (e) {
+    console.error(e);
     res.status(500).json({
       message: `Something went wrong.`,
     });
