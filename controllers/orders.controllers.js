@@ -49,3 +49,27 @@ export const getOrdersByUser = async (req, res) => {
     res.status(500).json({ message: "Something went wrong." });
   }
 };
+
+export const modifyOrderDetails = async (req, res) => {
+  try{
+    const {status, isPaid, paidAt} = req.body;
+    const {orderId } = req.params;
+
+    const updatedFields = {};
+
+    if(status) updatedFields.status = status;
+    if (isPaid) updatedFields.isPaid = isPaid;
+    if (paidAt) updatedFields.paidAt = paidAt;
+
+    const updatedOrder = await client.order.update({
+      where: {
+        id: orderId
+      },
+      data: updatedFields
+    })
+
+    res.status(200).json({updatedOrder})
+  } catch (e) {
+    res.status(500).json({message: "Something went wrong."})
+  }
+}

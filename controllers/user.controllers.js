@@ -21,9 +21,6 @@ export const updateUserProfile = async (req, res) => {
       where: { id: userId },
     });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
-    }
 
     const updatedFields = {};
 

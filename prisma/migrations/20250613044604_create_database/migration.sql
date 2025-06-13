@@ -72,9 +72,10 @@ CREATE TABLE "reviews" (
     "id" TEXT NOT NULL,
     "product_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
+    "author_name" TEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "text" TEXT NOT NULL,
-    "number" INTEGER NOT NULL,
+    "body" TEXT NOT NULL,
+    "rating" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

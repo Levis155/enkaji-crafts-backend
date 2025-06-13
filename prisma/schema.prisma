@@ -86,14 +86,15 @@ model Wishlist {
 }
 
 model Review {
-  id        String   @id @default(uuid())
-  productId String   @map("product_id")
-  userId    String   @map("user_id")
-  title     String   @map("title")
-  text      String   @map("text")
-  rating    Int      @map("number")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(uuid())
+  productId    String   @map("product_id")
+  userId       String   @map("user_id")
+  reviewAuthor String   @map("author_name")
+  reviewTitle  String   @map("title")
+  reviewBody   String   @map("body")
+  rating       Int      @map("rating")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   user    User    @relation(fields: [userId], references: [id])
   product Product @relation(fields: [productId], references: [id])
