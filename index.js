@@ -9,12 +9,17 @@ import usersRouter from "./routes/user.routes.js";
 import wishlistRouter from "./routes/wishlist.routes.js";
 import reviewsRouter from "./routes/reviews.routes.js";
 import orderItemsRouter from "./routes/orderItems.routes.js";
+import adminRouter from "./routes/admin.routes.js";
 
 const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://red-dune.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://red-dune.vercel.app",
+      "http://localhost:3001",
+    ],
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
@@ -29,5 +34,6 @@ app.use("/orders", ordersRouter);
 app.use("/order-items", orderItemsRouter);
 app.use("/users", usersRouter);
 app.use("/reviews", reviewsRouter);
+app.use("/admin", adminRouter);
 
 export default app;

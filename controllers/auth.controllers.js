@@ -68,7 +68,8 @@ export const login = async (req, res) => {
         phoneNumber: user.phoneNumber,
         county: user.county,
         town: user.town,
-        shippingCharge: user.shippingCharge
+        shippingCharge: user.shippingCharge,
+        isAdmin: user.isAdmin,
       });
   } catch (e) {
     res

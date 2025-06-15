@@ -21,7 +21,6 @@ export const updateUserProfile = async (req, res) => {
       where: { id: userId },
     });
 
-
     const updatedFields = {};
 
     if (fullName) updatedFields.fullName = fullName;
