@@ -18,7 +18,8 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://red-dune.vercel.app",
-      "http://localhost:3001",
+      "http://localhost:5174",
+      "https://enkaji-crafts-admin-panel.vercel.app"
     ],
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
     credentials: true,
