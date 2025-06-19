@@ -74,6 +74,7 @@ export const payAndPlaceOrder = async (req, res) => {
 };
 
 export const updatePaymentStatus = async (req, res) => {
+  console.log("callback url reached!!")
   const stkCallback = req.body.Body?.stkCallback;
   if (!stkCallback)
     return res.status(400).json({ message: "Invalid callback" });
