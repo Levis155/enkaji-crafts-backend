@@ -70,7 +70,7 @@ export const getDashboardStats = async (req, res) => {
       client.order.count(),
       client.order.aggregate({
         _sum: { totalPrice: true },
-        where: { status: "delivered" || "processed" || "shipped", isPaid: true },
+        where: { status: { in: ["delivered", "processed", "shipped"] }, isPaid: true },
       }),
       client.order.count({ where: { status: "pending" } }),
       client.order.count({ where: { status: "delivered" } }),
