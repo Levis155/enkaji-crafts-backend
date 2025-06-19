@@ -7,7 +7,7 @@ CREATE TABLE "users" (
     "phone_number" TEXT NOT NULL,
     "county" TEXT NOT NULL DEFAULT 'Nairobi',
     "town" TEXT NOT NULL DEFAULT 'CBD',
-    "shipping_charge" DOUBLE PRECISION NOT NULL DEFAULT 120,
+    "shipping_charge" DOUBLE PRECISION NOT NULL DEFAULT 1,
     "is_admin" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -87,13 +87,16 @@ CREATE TABLE "orders" (
     "id" TEXT NOT NULL,
     "order_number" SERIAL NOT NULL,
     "user_id" TEXT NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'pending',
     "total" DOUBLE PRECISION NOT NULL,
     "county" TEXT NOT NULL,
     "town" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
     "is_paid" BOOLEAN NOT NULL DEFAULT false,
     "paid_at" TIMESTAMP(3),
     "delivered_at" TIMESTAMP(3),
+    "checkout_req_id" TEXT NOT NULL,
+    "merchant_req_id" TEXT,
+    "result_description" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -124,6 +127,9 @@ CREATE UNIQUE INDEX "users_phone_number_key" ON "users"("phone_number");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "orders_order_number_key" ON "orders"("order_number");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "orders_checkout_req_id_key" ON "orders"("checkout_req_id");
 
 -- AddForeignKey
 ALTER TABLE "cart" ADD CONSTRAINT "cart_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
