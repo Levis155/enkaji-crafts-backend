@@ -74,7 +74,7 @@ export const getDashboardStats = async (req, res) => {
       }),
       client.order.count({ where: { status: "pending" } }),
       client.order.count({ where: { status: "delivered" } }),
-      client.order.count({ where: { status: "cancelled" } }),
+      client.order.count({ where: { status: "failed" } }),
       client.product.count({ where: { inStock: false } }),
     ]);
 
