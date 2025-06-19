@@ -103,26 +103,34 @@ model Review {
 }
 
 model Order {
-  id                String    @id @default(uuid())
-  orderNumber       Int       @unique @default(autoincrement()) @map("order_number")
-  userId            String    @map("user_id")
-  totalPrice        Float     @map("total")
-  county            String    @map("county")
-  town              String    @map("town")
-  status            String    @default("pending") @map("status")
-  isPaid            Boolean   @default(false) @map("is_paid")
-  paidAt            DateTime? @map("paid_at")
-  deliveredAt       DateTime? @map("delivered_at")
-  checkoutRequestId String    @unique @map("checkout_req_id")
-  merchantRequestId String?   @map("merchant_req_id")
-  resultDesc        String?   @map("result_description")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  id                String      @id @default(uuid())
+  orderNumber       String      @unique @map("order_number")
+  userId            String      @map("user_id")
+  totalPrice        Float       @map("total")
+  county            String      @map("county")
+  town              String      @map("town")
+  status            OrderStatus @default(pending) @map("status")
+  isPaid            Boolean     @default(false) @map("is_paid")
+  paidAt            DateTime?   @map("paid_at")
+  deliveredAt       DateTime?   @map("delivered_at")
+  checkoutRequestId String      @unique @map("checkout_req_id")
+  merchantRequestId String?     @map("merchant_req_id")
+  resultDesc        String?     @map("result_description")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
 
   user       User        @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
 
   @@map("orders")
+}
+
+enum OrderStatus {
+  pending
+  processed
+  failed
+  shipped
+  delivered
 }
 
 model OrderItem {

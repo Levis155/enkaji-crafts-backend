@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "OrderStatus" AS ENUM ('pending', 'processed', 'failed', 'shipped', 'delivered');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -85,12 +88,12 @@ CREATE TABLE "reviews" (
 -- CreateTable
 CREATE TABLE "orders" (
     "id" TEXT NOT NULL,
-    "order_number" SERIAL NOT NULL,
+    "order_number" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "total" DOUBLE PRECISION NOT NULL,
     "county" TEXT NOT NULL,
     "town" TEXT NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'pending',
+    "status" "OrderStatus" NOT NULL DEFAULT 'pending',
     "is_paid" BOOLEAN NOT NULL DEFAULT false,
     "paid_at" TIMESTAMP(3),
     "delivered_at" TIMESTAMP(3),

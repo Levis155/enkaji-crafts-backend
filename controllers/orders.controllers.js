@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
+import { sendOrderConfirmationEmail, sendAdminOrderNotification } from "../utils/sendEmail.js";
+import { generateOrderNumber } from "../utils/generateOrderNumber.js";
 
 const client = new PrismaClient();
 
@@ -41,10 +43,12 @@ export const payAndPlaceOrder = async (req, res) => {
     );
 
     const { MerchantRequestID, CheckoutRequestID } = mpesaResponse.data;
+    const orderNumber = await generateOrderNumber();
 
     await client.order.create({
       data: {
         userId,
+        orderNumber,
         totalPrice,
         town,
         county,
@@ -59,12 +63,10 @@ export const payAndPlaceOrder = async (req, res) => {
       },
     });
 
-    res
-      .status(200)
-      .json({
-        message: "STK push initiated.",
-        checkoutRequestId: CheckoutRequestID,
-      });
+    res.status(200).json({
+      message: "STK push initiated.",
+      checkoutRequestId: CheckoutRequestID,
+    });
   } catch (e) {
     console.log(e);
     res.status(500).json({ message: "Something went wrong." });
@@ -77,22 +79,46 @@ export const updatePaymentStatus = async (req, res) => {
     return res.status(400).json({ message: "Invalid callback" });
 
   const { CheckoutRequestID, ResultCode, ResultDesc } = stkCallback;
-  const status = ResultCode === 0 ? "success" : "failed";
-  const isPaid = ResultCode === 0 ? true : false;
+  const isPaid = ResultCode === 0;
+  const status = isPaid ? "processed" : "failed";
 
-  await client.order.update({
+  const order = await client.order.update({
     where: { checkoutRequestId: CheckoutRequestID },
     data: {
       status,
       isPaid,
       paidAt: new Date(),
       resultDesc: ResultDesc,
-      updatedAt: new Date(),
     },
+    include: { user: true },
   });
 
+  if (isPaid) {
+    const { user, orderNumber, totalPrice, county, town } = order;
+
+    // Send confirmation to user
+    await sendOrderConfirmationEmail({
+      to: user.emailAddress,
+      name: user.fullName,
+      orderNumber,
+      total: totalPrice,
+    });
+
+    // Send notification to admin
+    await sendAdminOrderNotification({
+      name: user.fullName,
+      email: user.emailAddress,
+      phone: user.phoneNumber,
+      orderNumber,
+      total: totalPrice,
+      address: `${county}, ${town}`,
+    });
+
+    console.log(`Email sent to customer and admin for order #${orderNumber}`);
+  }
+
   res.status(200).json("ok");
-}
+};
 
 export const receivePaymentStatus = async (req, res) => {
   const order = await client.order.findUnique({
@@ -102,8 +128,8 @@ export const receivePaymentStatus = async (req, res) => {
 
   if (!order) return res.status(404).json({ message: "Not found" });
 
-  res.json(order); // { status: 'pending' | 'success' | 'failed', resultDesc: '...' }
-}
+  res.json(order);
+};
 
 export const getOrdersByUser = async (req, res) => {
   try {
@@ -112,6 +138,9 @@ export const getOrdersByUser = async (req, res) => {
     const orders = await client.order.findMany({
       where: {
         userId,
+        status: {
+          notIn: ["pending", "failed"],
+        },
       },
       include: {
         orderItems: true,
