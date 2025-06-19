@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verifyUser from "../middleware/verifyUser.js";
-import { updateUserProfile, setUserToAdmin } from "../controllers/user.controllers.js";
+import { updateUserProfile } from "../controllers/user.controllers.js";
 
 const router = Router();
 
