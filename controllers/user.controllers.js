@@ -13,6 +13,7 @@ export const updateUserProfile = async (req, res) => {
       phoneNumber,
       county,
       town,
+      shippingCharge,
       password,
       oldPassword,
     } = req.body;
@@ -28,6 +29,7 @@ export const updateUserProfile = async (req, res) => {
     if (phoneNumber) updatedFields.phoneNumber = phoneNumber;
     if (county) updatedFields.county = county;
     if (town) updatedFields.town = town;
+    if(shippingCharge) updatedFields.shippingCharge = shippingCharge;
 
     if (password) {
       const isMatch = await bcrypt.compare(oldPassword, user.password);
