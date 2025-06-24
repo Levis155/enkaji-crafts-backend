@@ -6,11 +6,12 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "full_name" TEXT NOT NULL,
     "email_address" TEXT NOT NULL,
+    "google_id" TEXT,
     "password" TEXT NOT NULL,
     "phone_number" TEXT NOT NULL,
     "county" TEXT NOT NULL DEFAULT 'Nairobi',
     "town" TEXT NOT NULL DEFAULT 'CBD',
-    "shipping_charge" DOUBLE PRECISION NOT NULL DEFAULT 1,
+    "shipping_charge" DOUBLE PRECISION NOT NULL DEFAULT 150,
     "is_admin" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -124,6 +125,9 @@ CREATE TABLE "order_items" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_address_key" ON "users"("email_address");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_google_id_key" ON "users"("google_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_phone_number_key" ON "users"("phone_number");
