@@ -78,7 +78,7 @@ export const refreshAdminAccessToken = async (req, res) => {
       return res.status(403).json({ message: "Invalid refresh token." });
     }
 
-    const newAdminAccessToken = generateAccessToken({ id: user.id, isAdmin: user.isAdmin });
+    const newAdminAccessToken = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, process.env.JWT_SECRET_KEY, { expiresIn: "15m" });
 
     res
       .cookie("enkajiAdminAccessToken", newAdminAccessToken, {

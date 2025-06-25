@@ -1,10 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../utils/generateTokens.js";
 import { OAuth2Client } from "google-auth-library";
 import crypto from "crypto";
 import { addMinutes, isAfter } from "date-fns";
@@ -132,14 +128,26 @@ export const googleLogin = async (req, res) => {
       fullName: user.fullName,
     };
 
-    const authToken = jwt.sign(jwtPayload, process.env.JWT_SECRET_KEY);
+    const userAccessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET_KEY, { expiresIn: "15m" });
+    const userRefreshToken = jwt.sign(jwtPayload, process.env.JWT_REFRESH_SECRET_KEY, { expiresIn: "7d" });
+
+    await client.user.update({
+      where: { id: user.id },
+      data: { userRefreshToken },
+    });
 
     res
-      .status(200)
-      .cookie("enkajiAuthToken", authToken, {
+      .cookie("enkajiAccessToken", userAccessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
+        maxAge: 15 * 60 * 1000,
+      })
+      .cookie("enkajiRefreshToken", userRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .json({
         fullName: user.fullName,
@@ -150,9 +158,10 @@ export const googleLogin = async (req, res) => {
         shippingCharge: user.shippingCharge,
         isAdmin: user.isAdmin,
       });
-  } catch (error) {
-    console.error("Google login error:", error);
-    res.status(401).json({ message: "Google login failed. Please try again." });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Something went wrong." });
   }
 };
 
@@ -173,7 +182,7 @@ export const refreshAccessToken = async (req, res) => {
       return res.status(403).json({ message: "Invalid refresh token." });
     }
 
-    const newUserAccessToken = generateAccessToken({ id: user.id, fullName: user.fullName });
+    const newUserAccessToken = jwt.sign({ id: user.id, fullName: user.fullName }, process.env.JWT_SECRET_KEY, { expiresIn: "15m" });
 
     res
       .cookie("enkajiAuthToken", newUserAccessToken, {

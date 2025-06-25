@@ -15,6 +15,8 @@ CREATE TABLE "users" (
     "town" TEXT NOT NULL DEFAULT 'CBD',
     "shipping_charge" DOUBLE PRECISION NOT NULL DEFAULT 150,
     "is_admin" BOOLEAN NOT NULL DEFAULT false,
+    "user_refresh_token" TEXT,
+    "admin_refresh_token" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
