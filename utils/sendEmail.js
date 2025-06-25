@@ -67,7 +67,7 @@ export const sendPasswordResetEmail = async ({ to, name, resetLink }) => {
     <h2>Hi ${name},</h2>
     <p>You requested to reset your password for your Enkaji account.</p>
     <p>Click the link below to reset your password. This link will expire in 15 minutes:</p>
-    <p><a href="${resetLink}" target="_blank">${resetLink}</a></p>
+    <p><a href="${resetLink}" target="_blank">CLICK ON THIS LINK TO RESET YOUR PASSWORD</a></p>
     <br />
     <p>If you didn’t request this, you can safely ignore this email.</p>
     <p>— Enkaji Crafts Team</p>

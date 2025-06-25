@@ -151,7 +151,7 @@ export const forgotPassword = async (req, res) => {
     data: { resetToken, resetTokenExpiry },
   });
 
-  const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+  const resetLink = `${process.env.PASSWORD_RESET_URL}/${resetToken}`;
 
   await sendPasswordResetEmail({
     to: user.emailAddress,
@@ -164,11 +164,11 @@ export const forgotPassword = async (req, res) => {
 
 
 export const resetPassword = async (req, res) => {
-  const { token } = req.params;
+  const { resetToken } = req.params;
   const { newPassword } = req.body;
 
   const user = await client.user.findFirst({
-    where: { resetToken: token },
+    where: { resetToken },
   });
 
   if (!user || !user.resetTokenExpiry || isAfter(new Date(), user.resetTokenExpiry)) {

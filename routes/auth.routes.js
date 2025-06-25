@@ -9,6 +9,6 @@ router.route("/register").post(validateEmail, register);
 router.route("/login").post(login)
 router.route("/google").post(googleLogin);
 router.route("/forgot-password").post(forgotPassword);
-router.route("/reset-password").post(resetPassword);
+router.route("/reset-password/:resetToken").post(resetPassword);
 
 export default router;
