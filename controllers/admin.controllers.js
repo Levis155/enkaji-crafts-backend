@@ -27,19 +27,27 @@ export const adminLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const jwtPayload = {
+    const payload = {
       userId: user.id,
       isAdmin: user.isAdmin,
     };
 
-    const token = jwt.sign(jwtPayload, process.env.JWT_SECRET_KEY);
+    const adminAccessToken = generateAccessToken(payload);
+    const adminRefreshToken = generateRefreshToken(payload);
 
     res
       .status(200)
-      .cookie("enkajiAdminAuthToken", token, {
+      .cookie("enkajiAdminAuthToken", adminAccessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
+        maxAge: 15 * 60 * 1000,
+      })
+      .cookie("enkajiAdminRefreshToken", adminRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .json({
         id: user.id,
@@ -50,6 +58,69 @@ export const adminLogin = async (req, res) => {
   } catch (error) {
     console.error("Admin login error:", error);
     res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const refreshAdminAccessToken = async (req, res) => {
+  try {
+    const adminRefreshToken = req.cookies.enkajiAdminRefreshToken;
+
+    if (!adminRefreshToken) {
+      return res.status(401).json({ message: "No refresh token provided." });
+    }
+
+    const decoded = jwt.verify(adminRefreshToken, process.env.JWT_REFRESH_SECRET_KEY);
+    const user = await client.user.findUnique({
+      where: { id: decoded.id },
+    });
+
+    if (!user || user.adminRefreshToken !== adminRefreshToken) {
+      return res.status(403).json({ message: "Invalid refresh token." });
+    }
+
+    const newAdminAccessToken = generateAccessToken({ id: user.id, isAdmin: user.isAdmin });
+
+    res
+      .cookie("enkajiAdminAuthToken", newAdminAccessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 15 * 60 * 1000,
+      })
+      .json({ message: "Access token refreshed." });
+
+  } catch (err) {
+    return res.status(403).json({ message: "Invalid or expired refresh token." });
+  }
+};
+
+export const adminLogout = async (req, res) => {
+  try {
+    const adminRefreshToken = req.cookies.enkajiAdminRefreshToken;
+
+    if (!adminRefreshToken) return res.sendStatus(204); 
+
+    await client.user.updateMany({
+      where: { adminRefreshToken },
+      data: { adminRefreshToken: null },
+    });
+
+    res
+      .clearCookie("enkajiAdminAuthToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .clearCookie("enkajiAdminRefreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .json({ message: "Logged out successfully." });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Logout failed." });
   }
 };
 
@@ -70,7 +141,10 @@ export const getDashboardStats = async (req, res) => {
       client.order.count(),
       client.order.aggregate({
         _sum: { totalPrice: true },
-        where: { status: { in: ["delivered", "processed", "shipped"] }, isPaid: true },
+        where: {
+          status: { in: ["delivered", "processed", "shipped"] },
+          isPaid: true,
+        },
       }),
       client.order.count({ where: { status: "pending" } }),
       client.order.count({ where: { status: "delivered" } }),

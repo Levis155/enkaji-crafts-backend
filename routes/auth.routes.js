@@ -12,6 +12,6 @@ router.route("/google").post(googleLogin);
 router.route("/refresh").post(refreshAccessToken)
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password/:resetToken").post(checkPasswordStrength, resetPassword);
-router.route("logout").post(logout)
+router.route("/logout").post(logout)
 
 export default router;

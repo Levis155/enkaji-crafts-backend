@@ -1,6 +1,8 @@
 import { Router } from "express";
 import {
   adminLogin,
+  refreshAdminAccessToken,
+  adminLogout,
   getDashboardStats,
   getAdminProducts,
   getAdminProduct,
@@ -24,6 +26,8 @@ import verifyAdminUser from "../middleware/verifyAdminUser.js";
 const router = Router();
 
 router.route("/auth/login").post(adminLogin);
+router.route("/auth/refresh").post(refreshAdminAccessToken)
+router.route("/auth/logout").post(adminLogout)
 router.route("/dashboard/stats").get(verifyAdminUser, getDashboardStats);
 router
   .route("/products")

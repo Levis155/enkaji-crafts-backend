@@ -249,7 +249,7 @@ export const logout = async (req, res) => {
   try {
     const refreshToken = req.cookies.enkajiRefreshToken;
 
-    if (!refreshToken) return res.sendStatus(204); // No content
+    if (!refreshToken) return res.sendStatus(204); 
 
     await client.user.updateMany({
       where: { refreshToken },
