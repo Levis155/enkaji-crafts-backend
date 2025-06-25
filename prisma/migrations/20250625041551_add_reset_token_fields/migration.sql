@@ -8,6 +8,8 @@ CREATE TABLE "users" (
     "email_address" TEXT NOT NULL,
     "google_id" TEXT,
     "password" TEXT NOT NULL,
+    "reset_token" TEXT,
+    "reset_token_expiry" TIMESTAMP(3),
     "phone_number" TEXT NOT NULL,
     "county" TEXT NOT NULL DEFAULT 'Nairobi',
     "town" TEXT NOT NULL DEFAULT 'CBD',
