@@ -21,7 +21,7 @@ model User {
   shippingCharge    Float     @default(150) @map("shipping_charge")
   isAdmin           Boolean   @default(false) @map("is_admin")
   userRefreshToken  String?   @map("user_refresh_token")
-  AdminRefreshToken String?   @map("admin_refresh_token")
+  adminRefreshToken String?   @map("admin_refresh_token")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
   isDeleted         Boolean   @default(false) @map("is_deleted")
