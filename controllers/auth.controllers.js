@@ -2,6 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
+import crypto from "crypto";
+import { addMinutes, isAfter } from "date-fns";
+import { sendPasswordResetEmail } from "../utils/sendEmail.js";
 
 const client = new PrismaClient();
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -132,4 +135,56 @@ export const googleLogin = async (req, res) => {
     console.error("Google login error:", error);
     res.status(401).json({ message: "Google login failed. Please try again." });
   }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { emailAddress } = req.body;
+
+  const user = await client.user.findUnique({ where: { emailAddress } });
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  const resetTokenExpiry = addMinutes(new Date(), 15);
+
+  await client.user.update({
+    where: { emailAddress },
+    data: { resetToken, resetTokenExpiry },
+  });
+
+  const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+
+  await sendPasswordResetEmail({
+    to: user.emailAddress,
+    name: user.fullName,
+    resetLink,
+  });
+
+  res.status(200).json({ message: "Password reset link sent to email." });
+};
+
+
+export const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  const user = await client.user.findFirst({
+    where: { resetToken: token },
+  });
+
+  if (!user || !user.resetTokenExpiry || isAfter(new Date(), user.resetTokenExpiry)) {
+    return res.status(400).json({ message: "Token is invalid or expired." });
+  }
+
+  const hashed = await bcrypt.hash(newPassword, 12);
+
+  await client.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashed,
+      resetToken: null,
+      resetTokenExpiry: null,
+    },
+  });
+
+  res.status(200).json({ message: "Password reset successful." });
 };

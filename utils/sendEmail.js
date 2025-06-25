@@ -60,3 +60,19 @@ export const sendAdminOrderNotification = async ({
 
   await sendEmail({ to: process.env.ADMIN_EMAIL, subject, html });
 };
+
+export const sendPasswordResetEmail = async ({ to, name, resetLink }) => {
+  const subject = "Password Reset - Enkaji Crafts";
+  const html = `
+    <h2>Hi ${name},</h2>
+    <p>You requested to reset your password for your Enkaji account.</p>
+    <p>Click the link below to reset your password. This link will expire in 15 minutes:</p>
+    <p><a href="${resetLink}" target="_blank">${resetLink}</a></p>
+    <br />
+    <p>If you didn’t request this, you can safely ignore this email.</p>
+    <p>— Enkaji Crafts Team</p>
+  `;
+
+  await sendEmail({ to, subject, html });
+};
+
