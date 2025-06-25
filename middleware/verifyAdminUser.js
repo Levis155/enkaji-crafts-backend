@@ -1,13 +1,13 @@
 import jwt from "jsonwebtoken";
 
 function verifyAdminUser(req, res, next) {
-  const { enkajiAdminAuthToken } = req.cookies;
+  const adminAccessToken = req.cookies.enkajiAdminAccessToken;
 
-  if (!enkajiAdminAuthToken) {
+  if (!adminAccessToken) {
     return res.status(401).json({ message: "Unauthorized." });
   }
 
-  jwt.verify(enkajiAdminAuthToken, process.env.JWT_SECRET_KEY, (err, data) => {
+  jwt.verify(adminAccessToken, process.env.JWT_SECRET_KEY, (err, data) => {
     if (err) {
       return res.status(401).json({ message: "Unauthorized." });
     }

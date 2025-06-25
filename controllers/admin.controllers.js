@@ -32,12 +32,12 @@ export const adminLogin = async (req, res) => {
       isAdmin: user.isAdmin,
     };
 
-    const adminAccessToken = generateAccessToken(payload);
-    const adminRefreshToken = generateRefreshToken(payload);
+    const adminAccessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "15m" });;
+    const adminRefreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET_KEY, { expiresIn: "7d" });;
 
     res
       .status(200)
-      .cookie("enkajiAdminAuthToken", adminAccessToken, {
+      .cookie("enkajiAdminAccessToken", adminAccessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
@@ -81,7 +81,7 @@ export const refreshAdminAccessToken = async (req, res) => {
     const newAdminAccessToken = generateAccessToken({ id: user.id, isAdmin: user.isAdmin });
 
     res
-      .cookie("enkajiAdminAuthToken", newAdminAccessToken, {
+      .cookie("enkajiAdminAccessToken", newAdminAccessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
@@ -106,7 +106,7 @@ export const adminLogout = async (req, res) => {
     });
 
     res
-      .clearCookie("enkajiAdminAuthToken", {
+      .clearCookie("enkajiAdminAccessToken", {
         httpOnly: true,
         secure: true,
         sameSite: "None",

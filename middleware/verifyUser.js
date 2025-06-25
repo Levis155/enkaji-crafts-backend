@@ -1,13 +1,13 @@
 import jwt from "jsonwebtoken";
 
 function verifyUser(req, res, next) {
-  const { enkajiAuthToken } = req.cookies;
+  const userAccessToken = req.cookies.enkajiAccessToken;
 
-  if (!enkajiAuthToken) {
+  if (!userAccessToken) {
     return res.status(401).json({ message: "Unauthorized." });
   }
 
-  jwt.verify(enkajiAuthToken, process.env.JWT_SECRET_KEY, (err, data) => {
+  jwt.verify(userAccessToken, process.env.JWT_SECRET_KEY, (err, data) => {
     if (err) {
       return res.status(401).json({ message: "Unauthorized." });
     }

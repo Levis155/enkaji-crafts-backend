@@ -62,22 +62,22 @@ export const login = async (req, res) => {
       fullName: user.fullName,
     };
 
-    const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
+    const userAccessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "15m" });
+    const userRefreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET_KEY, { expiresIn: "7d" });
 
     await client.user.update({
       where: { id: user.id },
-      data: { refreshToken },
+      data: { userRefreshToken },
     });
 
     res
-      .cookie("enkajiAuthToken", accessToken, {
+      .cookie("enkajiAccessToken", userAccessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
         maxAge: 15 * 60 * 1000,
       })
-      .cookie("enkajiRefreshToken", refreshToken, {
+      .cookie("enkajiRefreshToken", userRefreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
@@ -158,25 +158,25 @@ export const googleLogin = async (req, res) => {
 
 export const refreshAccessToken = async (req, res) => {
   try {
-    const refreshToken = req.cookies.enkajiRefreshToken;
+    const userRefreshToken = req.cookies.enkajiRefreshToken;
 
-    if (!refreshToken) {
+    if (!userRefreshToken) {
       return res.status(401).json({ message: "No refresh token provided." });
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY);
+    const decoded = jwt.verify(userRefreshToken, process.env.JWT_REFRESH_SECRET_KEY);
     const user = await client.user.findUnique({
       where: { id: decoded.id },
     });
 
-    if (!user || user.refreshToken !== refreshToken) {
+    if (!user || user.userRefreshToken !== userRefreshToken) {
       return res.status(403).json({ message: "Invalid refresh token." });
     }
 
-    const newAccessToken = generateAccessToken({ id: user.id, fullName: user.fullName });
+    const newUserAccessToken = generateAccessToken({ id: user.id, fullName: user.fullName });
 
     res
-      .cookie("enkajiAuthToken", newAccessToken, {
+      .cookie("enkajiAuthToken", newUserAccessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
@@ -189,6 +189,35 @@ export const refreshAccessToken = async (req, res) => {
   }
 };
 
+export const logout = async (req, res) => {
+  try {
+    const userRefreshToken = req.cookies.enkajiRefreshToken;
+
+    if (!userRefreshToken) return res.sendStatus(204); 
+
+    await client.user.updateMany({
+      where: { userRefreshToken },
+      data: { userRefreshToken: null },
+    });
+
+    res
+      .clearCookie("enkajiAccessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .clearCookie("enkajiRefreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .json({ message: "Logged out successfully." });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Logout failed." });
+  }
+};
 
 export const forgotPassword = async (req, res) => {
   const { emailAddress } = req.body;
@@ -243,34 +272,4 @@ export const resetPassword = async (req, res) => {
   });
 
   res.status(200).json({ message: "Password reset successful." });
-};
-
-export const logout = async (req, res) => {
-  try {
-    const refreshToken = req.cookies.enkajiRefreshToken;
-
-    if (!refreshToken) return res.sendStatus(204); 
-
-    await client.user.updateMany({
-      where: { refreshToken },
-      data: { refreshToken: null },
-    });
-
-    res
-      .clearCookie("enkajiAuthToken", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-      })
-      .clearCookie("enkajiRefreshToken", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-      })
-      .json({ message: "Logged out successfully." });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Logout failed." });
-  }
 };
