@@ -165,7 +165,7 @@ export const forgotPassword = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   const { resetToken } = req.params;
-  const { newPassword } = req.body;
+  const { password } = req.body;
 
   const user = await client.user.findFirst({
     where: { resetToken },
@@ -175,7 +175,7 @@ export const resetPassword = async (req, res) => {
     return res.status(400).json({ message: "Token is invalid or expired." });
   }
 
-  const hashed = await bcrypt.hash(newPassword, 12);
+  const hashed = await bcrypt.hash(password, 12);
 
   await client.user.update({
     where: { id: user.id },

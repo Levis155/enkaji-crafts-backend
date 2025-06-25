@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import zxcvbn from "zxcvbn";
 
 const client = new PrismaClient();
 
@@ -35,6 +36,12 @@ export const updateUserProfile = async (req, res) => {
       const isMatch = await bcrypt.compare(oldPassword, user.password);
       if (!isMatch) {
         return res.status(401).json({ message: "Old password is incorrect." });
+      }
+
+      const result = zxcvbn(password);
+
+      if (result.score < 3) {
+        return res.status(400).json({message: "Please pick a stronger password."})
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
