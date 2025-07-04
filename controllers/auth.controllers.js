@@ -87,6 +87,7 @@ export const login = async (req, res) => {
         town: user.town,
         shippingCharge: user.shippingCharge,
         isAdmin: user.isAdmin,
+        refreshTokenExpiry: 7 * 24 * 60 * 60 * 1000,
       });
 
   } catch (e) {
@@ -157,6 +158,7 @@ export const googleLogin = async (req, res) => {
         town: user.town,
         shippingCharge: user.shippingCharge,
         isAdmin: user.isAdmin,
+        refreshTokenExpiry: 7 * 24 * 60 * 60 * 1000,
       });
 
   } catch (e) {
@@ -185,7 +187,7 @@ export const refreshAccessToken = async (req, res) => {
     const newUserAccessToken = jwt.sign({ id: user.id, fullName: user.fullName }, process.env.JWT_SECRET_KEY, { expiresIn: "15m" });
 
     res
-      .cookie("enkajiAuthToken", newUserAccessToken, {
+      .cookie("enkajiAccessToken", newUserAccessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
