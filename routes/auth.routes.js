@@ -9,7 +9,7 @@ const router = Router();
 router.route("/register").post([validateEmail,  checkPasswordStrength], register);
 router.route("/login").post(login)
 router.route("/google").post(googleLogin);
-router.route("/refresh").post(refreshAccessToken)
+router.route("/refresh").get(refreshAccessToken)
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password/:resetToken").post(checkPasswordStrength, resetPassword);
 router.route("/logout").post(logout)
