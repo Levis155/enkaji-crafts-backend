@@ -26,7 +26,7 @@ import verifyAdminUser from "../middleware/verifyAdminUser.js";
 const router = Router();
 
 router.route("/auth/login").post(adminLogin);
-router.route("/auth/refresh").post(refreshAdminAccessToken)
+router.route("/auth/refresh").get(refreshAdminAccessToken)
 router.route("/auth/logout").post(adminLogout)
 router.route("/dashboard/stats").get(verifyAdminUser, getDashboardStats);
 router
