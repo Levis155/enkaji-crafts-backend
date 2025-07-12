@@ -23,7 +23,7 @@ export const payAndPlaceOrder = async (req, res) => {
     const fullPhone = `254${phoneNumber.slice(1)}`;
 
     const mpesaResponse = await axios.post(
-      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+      "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
       {
         BusinessShortCode: shortCode,
         Password: password,

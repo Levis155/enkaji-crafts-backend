@@ -14,7 +14,7 @@ const router = Router();
 router.route("/").post([verifyUser, generateAccessToken], payAndPlaceOrder);
 router.route("/callback").post(updatePaymentStatus);
 router.route("/payment-status/:checkoutRequestId").get(receivePaymentStatus)
-router.route("/:orderId").patch(verifyUser, modifyOrderDetails); //verify req.user.isAdmin is true
+router.route("/:orderId").patch(verifyUser, modifyOrderDetails); 
 router.route("/user").get(verifyUser, getOrdersByUser);
 
 export default router;
